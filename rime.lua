@@ -161,6 +161,10 @@ function long_word_filter(input, env)
 
     local i = 1
     for cand in input:iter() do
+        -- 找齐了或者 l 太大了，就不找了
+        if (s == count) or (#l > 50) then
+            break
+        end
         local leng = utf8.len(cand.text)
         if (firstWordLength < 1 or i < idx) then
             i = i + 1
@@ -176,6 +180,15 @@ function long_word_filter(input, env)
     for _, cand in ipairs(l) do
         yield(cand)
     end
+    for cand in input:iter() do
+        yield(cand)
+    end
+
+    -- 如果内存大于 5000 的话，GC 一次，最小间隔 60s
+    -- if collectgarbage('count') > 5000 and (os.time() - last_gc_time) > 60 then
+    --     collectgarbage("collect")
+    --     last_gc_time = os.time()
+    -- end
 end
 -------------------------------------------------------------
 -- 降低部分英语单词在候选项的位置
